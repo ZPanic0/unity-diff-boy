@@ -1,5 +1,5 @@
-﻿using MediatR;
-using System;
+﻿using ConsoleApp.Queries;
+using MediatR;
 using System.Threading.Tasks;
 
 namespace ConsoleApp
@@ -15,7 +15,7 @@ namespace ConsoleApp
 
         public async Task Execute()
         {
-
+            var path = await mediator.Send(new GetEditorsPath.Request());
         }
     }
 }
