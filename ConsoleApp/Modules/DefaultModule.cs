@@ -6,6 +6,8 @@ namespace ConsoleApp.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterModule<MediatRModule>();
+
             builder
                 .RegisterType<Application>()
                 .AsSelf()
