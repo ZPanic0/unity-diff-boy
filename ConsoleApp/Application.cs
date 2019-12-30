@@ -16,6 +16,10 @@ namespace ConsoleApp
         public async Task Execute()
         {
             var path = await mediator.Send(new GetEditorsPath.Request());
+
+            var result = await mediator.Send(new GetVersionComparison.Request(
+                @"C:\Program Files\Unity\Hub\Editor\2019.2.16f1", 
+                @"C:\Program Files\Unity\Hub\Editor\2019.2.17f1"));
         }
     }
 }
