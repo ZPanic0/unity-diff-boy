@@ -24,9 +24,11 @@ namespace ConsoleApp.Queries
 
         public class Result
         {
-            public IEnumerable<string> Added { get; set; }
-            public IEnumerable<string> Modified { get; set; }
-            public IEnumerable<string> Removed { get; set; }
+            public IEnumerable<string> AddedFolders { get; set; }
+            public IEnumerable<string> AddedFiles { get; set; }
+            public IEnumerable<string> ModifiedFiles { get; set; }
+            public IEnumerable<string> RemovedFolders { get; set; }
+            public IEnumerable<string> RemovedFiles { get; set; }
         }
 
         public class Handler : IRequestHandler<Request, Result>
@@ -41,9 +43,11 @@ namespace ConsoleApp.Queries
 
                 var result = new Result
                 {
-                    Added = targetDirectories.Except(sourceDirectories).Concat(sourceFiles.Except(targetFiles)).ToArray(),
-                    Modified = GetModifiedFiles(request.SourcePath, request.TargetPath, sourceFiles, targetFiles),
-                    Removed = sourceDirectories.Except(targetDirectories).Concat(targetFiles.Except(sourceFiles)).ToArray()
+                    AddedFolders = targetDirectories.Except(sourceDirectories).ToArray(),
+                    AddedFiles = targetFiles.Except(sourceFiles).ToArray(),
+                    ModifiedFiles = GetModifiedFiles(request.SourcePath, request.TargetPath, sourceFiles, targetFiles).ToArray(),
+                    RemovedFolders = sourceDirectories.Except(targetDirectories).ToArray(),
+                    RemovedFiles = sourceFiles.Except(targetFiles).ToArray()
                 };
 
                 return result;

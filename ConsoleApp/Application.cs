@@ -1,4 +1,5 @@
-﻿using ConsoleApp.Queries;
+﻿using ConsoleApp.Commands;
+using ConsoleApp.Queries;
 using MediatR;
 using System.Threading.Tasks;
 
@@ -15,11 +16,22 @@ namespace ConsoleApp
 
         public async Task Execute()
         {
+            
             var path = await mediator.Send(new GetEditorsPath.Request());
 
-            var result = await mediator.Send(new GetVersionComparison.Request(
-                @"C:\Program Files\Unity\Hub\Editor\2019.2.16f1", 
-                @"C:\Program Files\Unity\Hub\Editor\2019.2.17f1"));
+            var sourcePath = @"C:\Program Files\Unity\Hub\Editor\2019.2.16f1";
+            var targetPath = @"C:\Program Files\Unity\Hub\Editor\2019.2.17f1";
+
+            var result = await mediator.Send(new GetVersionComparison.Request(sourcePath, targetPath));
+
+            await mediator.Send(new GenerateDiff.Request(
+                sourcePath,
+                targetPath,
+                result.AddedFolders,
+                result.AddedFiles,
+                result.ModifiedFiles,
+                result.RemovedFolders,
+                result.RemovedFiles));
         }
     }
 }
