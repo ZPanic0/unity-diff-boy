@@ -41,9 +41,9 @@ namespace ConsoleApp.Queries
 
                 var result = new Result
                 {
-                    Added = targetDirectories.Except(sourceDirectories).Concat(sourceFiles).ToArray(),
-                    Modified = GetModifiedFiles(request.SourcePath, request.TargetPath, sourceFiles, targetFiles).ToArray(),
-                    Removed = sourceDirectories.Except(targetDirectories).Concat(targetFiles).ToArray()
+                    Added = targetDirectories.Except(sourceDirectories).Concat(sourceFiles.Except(targetFiles)).ToArray(),
+                    Modified = GetModifiedFiles(request.SourcePath, request.TargetPath, sourceFiles, targetFiles),
+                    Removed = sourceDirectories.Except(targetDirectories).Concat(targetFiles.Except(sourceFiles)).ToArray()
                 };
 
                 return result;
