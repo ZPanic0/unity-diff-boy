@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ConsoleApp.Common;
 using MediatR;
 
 namespace ConsoleApp.Commands
@@ -13,9 +13,9 @@ namespace ConsoleApp.Commands
         public class Request : IRequest
         {
             public Request(
-                IEnumerable<string> addedDirectories, 
+                IEnumerable<string> addedDirectories,
                 IEnumerable<string> addedFiles,
-                IEnumerable<string> modifiedFiles, 
+                IEnumerable<string> modifiedFiles,
                 IEnumerable<string> removedDirectories,
                 IEnumerable<string> removedFiles)
             {
@@ -26,11 +26,11 @@ namespace ConsoleApp.Commands
                 RemovedFiles = removedFiles;
             }
 
-            public IEnumerable<string> AddedDirectories { get; set; }
-            public IEnumerable<string> AddedFiles { get; set; }
-            public IEnumerable<string> ModifiedFiles { get; set; }
-            public IEnumerable<string> RemovedDirectories { get; set; }
-            public IEnumerable<string> RemovedFiles { get; set; }
+            public IEnumerable<string> AddedDirectories { get; }
+            public IEnumerable<string> AddedFiles { get; }
+            public IEnumerable<string> ModifiedFiles { get; }
+            public IEnumerable<string> RemovedDirectories { get; }
+            public IEnumerable<string> RemovedFiles { get; }
         }
 
         public class Handler : IRequestHandler<Request>
@@ -40,15 +40,16 @@ namespace ConsoleApp.Commands
                 var outputDirectory = $@"{Directory.GetCurrentDirectory()}\output";
                 Directory.CreateDirectory(outputDirectory);
 
-                request.AddedDirectories = request.AddedDirectories.Select(item => $"AD {item}");
-                request.AddedFiles = request.AddedFiles.Select(item => $"AF {item}");
-                request.ModifiedFiles = request.ModifiedFiles.Select(item => $"MF {item}");
-                request.RemovedDirectories = request.RemovedDirectories.Select(item => $"RD {item}");
-                request.RemovedFiles = request.RemovedFiles.Select(item => $"RF {item}");
+                using var manifestStream = new FileStream($@"{outputDirectory}\manifest.json", FileMode.Create);
 
-                using var manifest = new FileStream($@"{outputDirectory}\manifest.json", FileMode.Create);
-                
-                await JsonSerializer.SerializeAsync(manifest, request);
+                await JsonSerializer.SerializeAsync(manifestStream, new Manifest
+                {
+                    AddedDirectories = request.AddedDirectories,
+                    AddedFiles = request.AddedFiles,
+                    ModifiedFiles = request.ModifiedFiles,
+                    RemovedDirectories = request.RemovedDirectories,
+                    RemovedFiles = request.RemovedFiles
+                });
 
                 return Unit.Value;
             }

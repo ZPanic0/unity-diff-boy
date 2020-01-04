@@ -65,6 +65,8 @@ namespace ConsoleApp.Commands
 
                 await mediator.Send(new ZipDeltaFiles.Request(targetDir, outputDir));
 
+                Directory.Delete(targetDir, true);
+
                 return Unit.Value;
             }
         }

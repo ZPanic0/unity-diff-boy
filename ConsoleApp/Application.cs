@@ -1,6 +1,7 @@
 ﻿using ConsoleApp.Commands;
 using ConsoleApp.Queries;
 using MediatR;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace ConsoleApp
@@ -16,9 +17,6 @@ namespace ConsoleApp
 
         public async Task Execute()
         {
-            
-            var path = await mediator.Send(new GetEditorsPath.Request());
-
             var sourcePath = @"C:\Program Files\Unity\Hub\Editor\2019.2.16f1";
             var targetPath = @"C:\Program Files\Unity\Hub\Editor\2019.2.17f1";
 
@@ -32,6 +30,13 @@ namespace ConsoleApp
                 result.ModifiedFiles,
                 result.RemovedFolders,
                 result.RemovedFiles));
+
+            var workingPath = @"C:\Program Files\Unity\Hub\Editor\2019.2.16f1 in progress";
+            Directory.CreateDirectory(workingPath);
+
+            await mediator.Send(new CopyFolder.Request(sourcePath, workingPath));
+
+            await mediator.Send(new ApplyDiff.Request(workingPath, $@"{Directory.GetCurrentDirectory()}\2019.2.16f1 to 2019.2.17f1.zip"));
         }
     }
 }
