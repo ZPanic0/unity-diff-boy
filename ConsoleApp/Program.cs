@@ -7,7 +7,7 @@ namespace ConsoleApp
     class Program
     {
         static async Task Main(string[] args) =>
-            await ComposeContainer().Resolve<Application>().Execute();
+            await ComposeContainer().Resolve<Application>().Execute(args);
 
         static IContainer ComposeContainer()
         {
