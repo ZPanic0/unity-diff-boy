@@ -6,7 +6,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleApp.Common;
-using DeltaCompressionDotNet.MsDelta;
 using MediatR;
 
 namespace ConsoleApp.Commands
@@ -27,13 +26,20 @@ namespace ConsoleApp.Commands
 
         public class Handler : IRequestHandler<Request>
         {
+            private readonly IDeltaCompression delta;
+
+            public Handler(IDeltaCompression delta)
+            {
+                this.delta = delta;
+            }
+
             public async Task<Unit> Handle(Request request, CancellationToken cancellationToken)
             {
                 if (!File.Exists(request.ZipPath)) throw new ArgumentException($"Could not find zip path at {request.ZipPath}");
                 if (!Directory.Exists(request.TargetPath)) throw new ArgumentException($"Could not find path at {request.TargetPath}");
 
                 var diffPath = $@"{Directory.GetCurrentDirectory()}\diff";
-                
+
                 ExtractDiff(request.ZipPath, diffPath);
 
                 var manifest = JsonSerializer.Deserialize<Manifest>(await File.ReadAllTextAsync($@"{diffPath}\manifest.json"));
@@ -93,8 +99,6 @@ namespace ConsoleApp.Commands
 
             private void ModifyFiles(string diffPath, string targetPath, IEnumerable<string> modifiedFilePaths)
             {
-                var delta = new MsDeltaCompression();
-
                 foreach (var partialFilePath in modifiedFilePaths)
                 {
                     var oldPath = targetPath + partialFilePath;

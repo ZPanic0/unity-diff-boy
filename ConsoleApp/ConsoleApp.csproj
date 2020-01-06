@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.9.4" />
     <PackageReference Include="DeltaCompressionDotNet" Version="2.0.0" />
+    <PackageReference Include="FossilDelta" Version="0.1.0" />
     <PackageReference Include="MediatR" Version="7.0.0" />
   </ItemGroup>
 

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DeltaCompressionDotNet.MsDelta;
+using ConsoleApp.Common;
 using MediatR;
 
 namespace ConsoleApp.Commands
@@ -25,10 +25,16 @@ namespace ConsoleApp.Commands
 
         public class Handler : IRequestHandler<Request>
         {
+            private readonly IDeltaCompression delta;
+
+            public Handler(IDeltaCompression delta)
+            {
+                this.delta = delta;
+            }
+
             public Task<Unit> Handle(Request request, CancellationToken cancellationToken)
             {
                 var baseDirectory = Directory.GetCurrentDirectory();
-                var delta = new MsDeltaCompression();
 
                 foreach (var relativePath in request.ModifiedFiles)
                 {
@@ -37,7 +43,7 @@ namespace ConsoleApp.Commands
                     var deltaFilePath = $@"{baseDirectory}\output{relativePath}";
 
                     Directory.CreateDirectory(Path.GetDirectoryName(deltaFilePath));
-                    delta.CreateDelta(sourcePath, targetPath, deltaFilePath);
+                    delta.CreateDelta(deltaFilePath, sourcePath, targetPath);
                 }
 
                 return Unit.Task;
